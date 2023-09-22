@@ -177,7 +177,10 @@ export abstract class BaseChain<
     );
     const runManager = await callbackManager_?.handleChainStart(
       this.toJSON(),
-      fullValues
+      fullValues,
+      undefined,
+      undefined,
+      parsedConfig?.runName
     );
     let outputValues: RunOutput;
     try {

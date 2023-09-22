@@ -60,6 +60,11 @@ export interface BaseCallbackConfig {
    * Tags are passed to all callbacks, metadata is passed to handle*Start callbacks.
    */
   callbacks?: Callbacks;
+
+  /**
+   * Name for the tracer run for this call. Defaults to the name of the class.
+   */
+  runName?: string;
 }
 
 export function parseCallbackConfigArg(
@@ -603,7 +608,11 @@ export class CallbackManager
     chain: Serialized,
     inputs: ChainValues,
     runId = uuidv4(),
-    runType: string | undefined = undefined
+    _parentRunId: string | undefined = undefined,
+    _tags: string[] | undefined = undefined,
+    _metadata: Record<string, unknown> | undefined = undefined,
+    runType: string | undefined = undefined,
+    runName: string | undefined = undefined
   ): Promise<CallbackManagerForChainRun> {
     await Promise.all(
       this.handlers.map((handler) =>
@@ -617,7 +626,8 @@ export class CallbackManager
                 this._parentRunId,
                 this.tags,
                 this.metadata,
-                runType
+                runType,
+                runName
               );
             } catch (err) {
               console.error(

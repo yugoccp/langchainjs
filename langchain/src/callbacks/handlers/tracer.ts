@@ -214,13 +214,14 @@ export abstract class BaseTracer extends BaseCallbackHandler {
     parentRunId?: string,
     tags?: string[],
     metadata?: KVMap,
-    runType?: string
+    runType?: string,
+    runName?: string
   ): Promise<void> {
     const execution_order = this._getExecutionOrder(parentRunId);
     const start_time = Date.now();
     const run: Run = {
       id: runId,
-      name: chain.id[chain.id.length - 1],
+      name: runName ?? chain.id[chain.id.length - 1],
       parent_run_id: parentRunId,
       start_time,
       serialized: chain,
