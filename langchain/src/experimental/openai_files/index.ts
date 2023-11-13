@@ -1,12 +1,15 @@
 import { OpenAI as OpenAIClient } from "openai";
 import fs from "node:fs";
+import { Serializable } from "../../load/serializable.js";
 
 export type OpenAIFilesCreate = {
   file: fs.ReadStream;
   purpose: "assistants" | "fine-tune";
 };
 
-export class OpenAIFiles {
+export class OpenAIFiles extends Serializable {
+  lc_namespace = ["langchain", "experimental", "open_ai_files"];
+
   /**
    * Upload file
    * Upload a file that can be used across various endpoints. The size of all the files uploaded by one organization can be up to 100 GB.
