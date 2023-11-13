@@ -19,7 +19,7 @@ export class OpenAIFiles extends Serializable {
    * @link {https://platform.openai.com/docs/api-reference/files/create}
    * @param {fs.ReadStream} file
    * @param {"assistants" | "fine-tune"} purpose
-   * @returns
+   * @returns {Promise<OpenAIClient.Files.FileObject>}
    */
   static async createFile({ file, purpose }: OpenAIFilesCreate) {
     const oaiClient = new OpenAIClient();
@@ -34,7 +34,7 @@ export class OpenAIFiles extends Serializable {
    * @link {https://platform.openai.com/docs/api-reference/files/delete}
    *
    * @param {string} fileId
-   * @returns
+   * @returns {Promise<OpenAIClient.Files.FileDeleted>}
    */
   static async deleteFile({ fileId }: { fileId: string }) {
     const oaiClient = new OpenAIClient();
@@ -47,7 +47,7 @@ export class OpenAIFiles extends Serializable {
    * @link {https://platform.openai.com/docs/api-reference/files/list}
    * @param {OpenAIClient.Files.FileListParams | undefined} query
    * @param {OpenAIClient.RequestOptions | undefined} options
-   * @returns
+   * @returns {Promise<OpenAIClient.Files.FileObjectsPage>}
    */
   static async listFiles(props?: {
     query?: OpenAIClient.Files.FileListParams;
@@ -62,7 +62,7 @@ export class OpenAIFiles extends Serializable {
    * Returns information about a specific file.
    * @link {https://platform.openai.com/docs/api-reference/files/retrieve}
    * @param {string} fileId
-   * @returns
+   * @returns {Promise<OpenAIClient.Files.FileObject>}
    */
   static async retrieveFile({ fileId }: { fileId: string }) {
     const oaiClient = new OpenAIClient();
@@ -77,7 +77,7 @@ export class OpenAIFiles extends Serializable {
    *
    * @link {https://platform.openai.com/docs/api-reference/files/retrieve-contents}
    * @param {string} fileId
-   * @returns
+   * @returns {Promise<string>}
    */
   static async retrieveFileContent({ fileId }: { fileId: string }) {
     const oaiClient = new OpenAIClient();
