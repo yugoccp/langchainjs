@@ -6,14 +6,18 @@
     "langchain#build": {
       "dependsOn": ["@langchain/core#build"]
     },
-    "@langchain/examples#build": {
-      "dependsOn": ["langchain#build"]
-    },
     "libs/langchain-anthropic#build": {
       "dependsOn": ["@langchain/core#build"]
     },
     "libs/langchain-openai#build": {
       "dependsOn": ["@langchain/core#build"]
+    },
+    "@langchain/examples#build": {
+      "dependsOn": [
+        "langchain#build",
+        "libs/langchain-anthropic#build",
+        "libs/langchain-openai#build"
+      ]
     },
     "build": {
       "dependsOn": ["@langchain/core#build", "^build"],
