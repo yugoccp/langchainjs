@@ -40,8 +40,8 @@ export interface OllamaInput {
 
 export interface OllamaRequestParams {
   model: string;
-  prompt: string;
   format?: StringWithAutocomplete<"json">;
+  images: string[];
   options: {
     embedding_only?: boolean;
     f16_kv?: boolean;
@@ -76,6 +76,14 @@ export interface OllamaRequestParams {
   };
 }
 
+export interface OllamaGenerateRequestParams extends OllamaRequestParams {
+  prompt: string;
+}
+
+export interface OllamaChatRequestParams extends OllamaRequestParams {
+  messages: string;
+}
+
 export interface OllamaCallOptions extends BaseLanguageModelCallOptions {}
 
 export type OllamaGenerationChunk = {
@@ -93,7 +101,8 @@ export type OllamaGenerationChunk = {
 
 export async function* createOllamaStream(
   baseUrl: string,
-  params: OllamaRequestParams,
+  isChat: boolean,
+  params: OllamaRequestParams | OllamaChatRequestParams,
   options: OllamaCallOptions
 ): AsyncGenerator<OllamaGenerationChunk> {
   let formattedBaseUrl = baseUrl;
@@ -105,7 +114,8 @@ export async function* createOllamaStream(
       "http://127.0.0.1:"
     );
   }
-  const response = await fetch(`${formattedBaseUrl}/api/generate`, {
+  const requestPath = isChat ? "/api/chat" : "/api/generate";
+  const response = await fetch(`${formattedBaseUrl}${requestPath}`, {
     method: "POST",
     body: JSON.stringify(params),
     headers: {
