@@ -76,6 +76,8 @@ export type RunEvalConfig<
    * Convert the evaluation data into formats that can be used by the evaluator.
    * This should most commonly be a string.
    * Parameters are the raw input from the run, the raw output, raw reference output, and the raw run.
+   * This function will be used for all LangChain evaluators, unless
+   * a specific formatEvaluatorInputs function is provided for a specific evaluator.
    * @example
    * ```ts
    * // Chain input: { input: "some string" }
@@ -121,6 +123,7 @@ export interface EvalConfig extends LoadEvaluatorOptions {
    * Convert the evaluation data into formats that can be used by the evaluator.
    * This should most commonly be a string.
    * Parameters are the raw input from the run, the raw output, raw reference output, and the raw run.
+   * This overrides any formatEvaluatorInputs defined in the RunEvalConfig.
    * @example
    * ```ts
    * // Chain input: { input: "some string" }
@@ -140,7 +143,7 @@ export interface EvalConfig extends LoadEvaluatorOptions {
    * ```
    * @returns The prepared data.
    */
-  formatEvaluatorInputs: EvaluatorInputFormatter;
+  formatEvaluatorInputs?: EvaluatorInputFormatter;
 }
 
 /**

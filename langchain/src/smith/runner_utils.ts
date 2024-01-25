@@ -94,14 +94,29 @@ class PreparedRunEvaluator implements RunEvaluator {
     this.formatEvaluatorInputs = formatEvaluatorInputs;
   }
 
-  static async fromEvalConfig(
-    config: EvalConfig | keyof EvaluatorType
-  ): Promise<PreparedRunEvaluator> {
+  static async fromEvalConfig(props: {
+    evalConfig: EvalConfig | keyof EvaluatorType;
+    defaulFormatEvaluatorInputs?: EvaluatorInputFormatter;
+  }): Promise<PreparedRunEvaluator> {
+    const { evalConfig, defaulFormatEvaluatorInputs } = props;
     const evaluatorType =
-      typeof config === "string" ? config : config.evaluatorType;
-    const evalConfig = typeof config === "string" ? ({} as EvalConfig) : config;
-    const evaluator = await loadEvaluator(evaluatorType, evalConfig);
-    const feedbackKey = evalConfig?.feedbackKey ?? evaluator?.evaluationName;
+      typeof evalConfig === "string" ? evalConfig : evalConfig.evaluatorType;
+    const formatEvaluatorInputs =
+      (typeof evalConfig !== "string"
+        ? evalConfig?.formatEvaluatorInputs
+        : undefined) ?? defaulFormatEvaluatorInputs;
+    if (!formatEvaluatorInputs) {
+      throw new Error(
+        `Evaluator ${evaluatorType} must have a formatEvaluatorInputs function,` +
+          " or a default must be provided on the RunEvalConfig."
+      );
+    }
+
+    const resolvedConfig =
+      typeof evalConfig === "string" ? ({} as EvalConfig) : evalConfig;
+    const evaluator = await loadEvaluator(evaluatorType, resolvedConfig);
+    const feedbackKey =
+      resolvedConfig?.feedbackKey ?? evaluator?.evaluationName;
     if (!feedbackKey) {
       throw new Error(
         `Evaluator of type ${evaluatorType} must have an evaluationName` +
@@ -118,7 +133,7 @@ class PreparedRunEvaluator implements RunEvaluator {
     return new PreparedRunEvaluator(
       evaluator as LLMStringEvaluator,
       feedbackKey,
-      evalConfig?.formatEvaluatorInputs
+      formatEvaluatorInputs
     );
   }
 
@@ -173,7 +188,10 @@ class LoadedEvalConfig {
     const offTheShelfEvaluators = await Promise.all(
       config?.evaluators?.map(
         async (evaluator) =>
-          await PreparedRunEvaluator.fromEvalConfig(evaluator)
+          await PreparedRunEvaluator.fromEvalConfig({
+            evalConfig: evaluator,
+            defaulFormatEvaluatorInputs: config.formatEvaluatorInputs,
+          })
       ) ?? []
     );
     return new LoadedEvalConfig(
